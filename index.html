@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>不必要的迂回</title>
+    <link href="https://cdn.bootcdn.net/ajax/libs/github-markdown-css/5.2.0/github-markdown.css" rel="stylesheet">
+    <style>
+        .markdown-body {
+            max-width: 800px; /* 或根据你的需求调整 */
+            margin: 0 auto; /* 上下边距为0，左右自动，以居中内容 */
+            padding: 0 20px; /* 内部左右边距，提高阅读体验 */
+            background-color: #fff; /* 默认为白色背景 */
+            color: #24292e; /* 默认文字颜色 */
+            transition: background-color 0.3s ease, color 0.3s ease; /* 平滑过渡效果 */
+        }
+    
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color: #0d1117; /* 深色模式背景颜色 */
+                color: #c9d1d9; /* 深色模式文本颜色 */
+            }
+            .markdown-body {
+                background-color: #0d1117;
+                color: #c9d1d9;
+            }
+        }
+    </style>
+    <script>
+        window.MathJax = {
+          tex: {
+            inlineMath: [['$', '$'], ['\\(', '\\)']],
+            displayMath: [['$$', '$$'], ['\\[', '\\]']],
+            packages: {'[+]': ['noerrors', 'noundefined', 'ams']}
+          },
+          loader: {
+            load: ['[tex]/ams', '[tex]/noerrors', '[tex]/noundefined']
+          }
+        };
+      </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+</head>
+
+<body>
+    <div id="content" class="markdown-body"></div>
+    
+    <script src="https://cdn.bootcdn.net/ajax/libs/marked/9.0.0/marked.min.js"></script>
+    <script>
+        fetch('Q2.md')
+            .then(response => response.text())
+            .then(text => {
+                // 首先，使用marked.js解析Markdown文本
+                text = text.replace(/\\\\/g, '\\\\\\\\');
+                let html = marked.parse(text);
+    
+                // 然后，修复公式中的转义问题
+                // 将Markdown转换的公式中的单个反斜杠替换为双反斜杠
+                // 注意：这里的正则表达式假设你的公式不会包含连续超过两个的反斜杠
+                // html = html.replace(/\\\\/g, '\\\\\\\\');
+    
+                // 最后，设置HTML内容并请求MathJax重新渲染
+                const content = document.getElementById('content');
+                content.innerHTML = html;
+                if (window.MathJax) {
+                    MathJax.typesetPromise([content]).catch(function (err) {
+                        console.error('MathJax rendering error:', err);
+                    });
+                }
+            })
+            .catch(error => console.error('Error loading the Markdown file:', error));
+    </script>
+</body>
+</html>
